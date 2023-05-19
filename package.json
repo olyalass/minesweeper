@@ -9,5 +9,11 @@
   },
   "dependencies": {
     "webpack-dev-server": "^4.15.0"
+  },
+  "scripts": {
+    "webpack": "webpack",
+    "dev": "webpack serve --mode development --config webpack/dev.webpack.js",
+    "build": "webpack --mode production --config webpack/build.webpack.js",
+    "deploy": "gh-pages -d build"
   }
 }
