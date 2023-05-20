@@ -1,0 +1,57 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 55vw;
+  margin: auto;
+
+  &__panel {
+    width: 20vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__counter {
+    padding: 0 10px;
+    font-family: "Staatliches";
+  }
+
+  &__container {
+    display: grid;
+    grid-template-columns: 10vw 1fr 10vw;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__board {
+    display: flex;
+    flex-wrap: wrap;
+    width: 30vw;
+    height: 30vw;
+    background-color: rgb(141, 72, 28);
+    border: 5px solid black;
+    border-radius: 1vw;
+    box-sizing: border-box;
+    padding: 2vw;
+  }
+
+  &__hunter {
+    height: 11vw;
+    margin-left: auto;
+  }
+
+  &__bunny {
+    width: 10vw;
+  }
+
+  &__sizes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__title {
+    font-family: "Staatliches";
+  }
+}

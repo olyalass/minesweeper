@@ -1,0 +1,24 @@
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url(../../../assets/icons/grass.jpg);
+  width: 3vw;
+  height: 3vw;
+  border-radius: 0.5vw;
+  box-sizing: border-box;
+  border: 3px solid rgb(1, 80, 1);
+
+  &__img {
+    width: 2.5vw;
+  }
+
+  &_opened {
+    background-image: none;
+  }
+
+  &_mine {
+    background-image: none;
+    background-color: rgb(167, 34, 14);
+  }
+}

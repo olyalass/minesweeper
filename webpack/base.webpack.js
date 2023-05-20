@@ -54,6 +54,14 @@ module.exports = {
           filename: path.join("icons", "[name].[ext]"),
         },
       },
+      {
+        test: /\.(ogg)$/i,
+        use: [
+          {
+            loader: "file-loader",
+          },
+        ],
+      },
     ],
   },
 };

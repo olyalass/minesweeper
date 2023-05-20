@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+}
+
+.app {
+  background-color: rgb(236, 242, 155);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.button {
+  color: rgb(254, 202, 49);
+  font-size: 1.3vw;
+  font-family: "Luckiest Guy";
+  text-shadow: 3px 3px black;
+  background-color: unset;
+  border: none;
+  cursor: pointer;
+  min-width: 4vw;
+
+  &:hover {
+    font-size: 1.6vw;
+  }
+}
