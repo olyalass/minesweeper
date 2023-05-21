@@ -42,6 +42,7 @@ export default class Field {
     this.tilesArr = [];
     this.generateField(0, 0);
     this.createTiles();
+    this.openedTiles = 0;
 
     this.item.append(panel, container);
 
@@ -54,6 +55,10 @@ export default class Field {
     };
     Object.keys(soundsObj).forEach((key) => {
       this.createAudio(soundsObj[key], key);
+    });
+
+    this.restartButton.addEventListener("click", () => {
+      this.restart();
     });
   }
 
@@ -85,7 +90,6 @@ export default class Field {
 
   generateField(reservedX, reservedY) {
     const array = Array.from(Array(this.size), () => new Array(this.size));
-    console.log(array);
     for (let i = 0; i < this.size; i++) {
       let x = Math.floor(Math.random() * this.size);
       let y = Math.floor(Math.random() * this.size);
@@ -101,30 +105,51 @@ export default class Field {
   handleStep(x, y, neigbourMines, wasClicked) {
     this.x = x;
     this.y = y;
-    console.log(this.array[x][y]);
     while (this.array[x][y] && this.steps === 0) {
       this.generateField(x, y);
       this.createTiles();
     }
+
+    this.openedTiles += 1;
     this.tilesArr.find((e) => e.xy === `${x} ${y}`).tile.revealTile();
-    if (neigbourMines === 0) {
-      if (y > 0) {
-        this.tilesArr.find((e) => e.xy === `${x} ${y - 1}`).tile.openTile();
-      }
-      if (x > 0) {
-        this.tilesArr.find((e) => e.xy === `${x - 1} ${y}`).tile.openTile();
-      }
-      if (y < this.size - 1) {
-        this.tilesArr.find((e) => e.xy === `${x} ${y + 1}`).tile.openTile();
-      }
-      if (x < this.size - 1) {
-        console.log(y);
-        this.tilesArr.find((e) => e.xy === `${x + 1} ${y}`).tile.openTile();
+    if (this.array[x][y]) {
+      setTimeout(() => {
+        this.handler(false);
+      }, 1000);
+    } else {
+      if (this.openedTiles === this.size * (this.size - 1)) {
+        this.handler(true, this.steps, this.timeCounter.textContent);
+      } else {
+        if (neigbourMines === 0) {
+          if (y > 0) {
+            this.tilesArr.find((e) => e.xy === `${x} ${y - 1}`).tile.openTile();
+          }
+          if (x > 0) {
+            this.tilesArr.find((e) => e.xy === `${x - 1} ${y}`).tile.openTile();
+          }
+          if (y < this.size - 1) {
+            this.tilesArr.find((e) => e.xy === `${x} ${y + 1}`).tile.openTile();
+          }
+          if (x < this.size - 1) {
+            this.tilesArr.find((e) => e.xy === `${x + 1} ${y}`).tile.openTile();
+          }
+        }
       }
     }
     if (wasClicked) {
       this.steps = this.steps + 1;
       this.stepsCounter.textContent = `Steps: ${this.steps}`;
     }
+  }
+
+  onGameEnd(handler) {
+    this.handler = handler;
+  }
+
+  restart() {
+    this.generateField(0, 0);
+    this.createTiles();
+    this.steps = 0;
+    this.stepsCounter.textContent = `Steps: ${this.steps}`;
   }
 }

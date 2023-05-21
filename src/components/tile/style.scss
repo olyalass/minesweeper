@@ -9,12 +9,47 @@
   box-sizing: border-box;
   border: 3px solid rgb(1, 80, 1);
 
+  &__num {
+    &_one {
+      color: rgb(1, 118, 1);
+    }
+
+    &_two {
+      color: rgb(115, 132, 5);
+    }
+
+    &_three {
+      color: rgb(170, 130, 0);
+    }
+
+    &_four {
+      color: rgb(187, 50, 0);
+    }
+
+    &_five {
+      color: rgb(167, 34, 14);
+    }
+
+    &_six {
+      color: red;
+    }
+
+    &_seven {
+      color: purple;
+    }
+
+    &_eight {
+      color: blue;
+    }
+  }
+
   &__img {
     width: 2.5vw;
   }
 
   &_opened {
     background-image: none;
+    background-color: rgb(214, 212, 136);
   }
 
   &_mine {
