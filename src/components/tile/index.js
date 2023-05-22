@@ -8,9 +8,9 @@ export default class Tile {
     this.wasClicked = false;
     this.item = document.createElement("div");
     this.item.classList.add("tile");
-    const flagImg = document.createElement("img");
-    flagImg.setAttribute("src", require("../../../assets/icons/flag.png"));
-    flagImg.classList.add("tile__img");
+    this.flagImg = document.createElement("img");
+    this.flagImg.setAttribute("src", require("../../../assets/icons/flag.png"));
+    this.flagImg.classList.add("tile__img");
 
     if (isMine) {
       const minesArr = [
@@ -33,17 +33,25 @@ export default class Tile {
     this.item.addEventListener("contextmenu", (i) => {
       if (!this.isOpened) {
         i.preventDefault();
+        this.flag();
+
         let flag = document.getElementById("flag");
         flag.play();
-        if (!this.isFlagged) {
-          this.item.append(flagImg);
-          this.isFlagged = true;
-        } else {
-          flagImg.remove();
-          this.isFlagged = false;
-        }
       }
     });
+  }
+
+  flag() {
+    this.flagHandler(this.x, this.y, this.wasClicked);
+    if (!this.isFlagged) {
+      this.flagHandler(this.x, this.y, true);
+      this.item.append(this.flagImg);
+      this.isFlagged = true;
+    } else {
+      this.flagHandler(this.x, this.y, false);
+      this.flagImg.remove();
+      this.isFlagged = false;
+    }
   }
 
   openTile() {
@@ -51,6 +59,23 @@ export default class Tile {
       this.countMines();
       this.handler(this.x, this.y, this.mineCounter, this.wasClicked);
     }
+  }
+
+  silentRevealTile() {
+    if (!this.isMine) {
+      this.countMines();
+      const num = this.showMineCount();
+      this.item.classList.add("tile_opened");
+      this.item.innerHTML = "";
+      this.item.append(num);
+    } else {
+      this.item.classList.add("tile_mine");
+      const img = document.createElement("img");
+      img.classList.add("tile__img");
+      img.setAttribute("src", this.img);
+      this.item.appendChild(img);
+    }
+    this.isOpened = true;
   }
 
   revealTile() {
@@ -75,6 +100,10 @@ export default class Tile {
 
   onStepDone(handler) {
     this.handler = handler;
+  }
+
+  onFlag(handler) {
+    this.flagHandler = handler;
   }
 
   countMines() {

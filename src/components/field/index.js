@@ -37,15 +37,6 @@ export default class Field {
     bunny.classList.add("field__bunny");
     container.append(hunter, this.board, bunny);
 
-    this.isStarted = false;
-    this.size = 10;
-    this.tilesArr = [];
-    this.generateField(0, 0);
-    this.createTiles();
-    this.openedTiles = 0;
-
-    this.item.append(panel, container);
-
     const soundsObj = {
       step: stepSound,
       stick: stickSound,
@@ -57,8 +48,42 @@ export default class Field {
       this.createAudio(soundsObj[key], key);
     });
 
+    this.tilesArr = [];
+
+    if (localStorage.getItem("game") === "undefined") {
+      this.size = 10;
+      this.generateField(0, 0);
+      this.openedTiles = 0;
+      this.openedTileXYs = [];
+      this.flagedXYs = [];
+    } else {
+      const prevGame = JSON.parse(localStorage.getItem("game"));
+      this.array = prevGame.array;
+      this.time = prevGame.time;
+      this.startTimer(this.time);
+      this.timeCounter.textContent = prevGame.timeString;
+      this.steps = prevGame.steps;
+      this.stepsCounter.textContent = `Steps: ${this.steps}`;
+      this.size = prevGame.size;
+      this.openedTileXYs = prevGame.opened;
+      this.flagedXYs = prevGame.flaged;
+    }
+
+    this.item.append(panel, container);
+
+    this.createTiles();
+
     this.restartButton.addEventListener("click", () => {
       this.restart();
+    });
+
+    this.openedTileXYs.forEach((coords) => {
+      const target = this.tilesArr.find((e) => e.xy === coords).tile;
+      target.silentRevealTile();
+    });
+    this.flagedXYs.forEach((coords) => {
+      const target = this.tilesArr.find((e) => e.xy === coords).tile;
+      target.flag();
     });
   }
 
@@ -81,6 +106,7 @@ export default class Field {
           tile = new Tile(false, this.array, i, j);
         }
         tile.onStepDone(this.handleStep.bind(this));
+        tile.onFlag(this.handleFlag.bind(this));
         this.board.append(tile.item);
         const xy = `${i} ${j}`;
         this.tilesArr.push({ xy: xy, tile: tile });
@@ -93,13 +119,22 @@ export default class Field {
     for (let i = 0; i < this.size; i++) {
       let x = Math.floor(Math.random() * this.size);
       let y = Math.floor(Math.random() * this.size);
-      while (x === reservedX && y === reservedY) {
+      while ((x === reservedX && y === reservedY) || array[x][y]) {
         x = Math.floor(Math.random() * this.size);
         y = Math.floor(Math.random() * this.size);
       }
       array[x][y] = true;
     }
     this.array = array;
+    console.log("Cheetsheet: ");
+    console.log(this.array);
+  }
+
+  handleFlag(x, y, isFlagged) {
+    if (isFlagged) {
+      const flagObj = this.tilesArr.find((e) => e.xy === `${x} ${y}`);
+      this.flagedXYs.push(flagObj.xy);
+    } else this.flagedXYs = this.flagedXYs.filter((e) => e !== `${x} ${y}`);
   }
 
   handleStep(x, y, neigbourMines, wasClicked) {
@@ -109,21 +144,27 @@ export default class Field {
       this.generateField(x, y);
       this.createTiles();
     }
+
     if (this.steps === 0) {
-      this.startTimer();
+      this.startTimer(0);
     }
 
     this.openedTiles += 1;
-    this.tilesArr.find((e) => e.xy === `${x} ${y}`).tile.revealTile();
+    const tileObj = this.tilesArr.find((e) => e.xy === `${x} ${y}`);
+    tileObj.tile.revealTile();
+    this.openedTileXYs.push(tileObj.xy);
     if (this.array[x][y]) {
       setTimeout(() => {
         this.handler(false);
         this.stopTimer();
+        localStorage.setItem("game", undefined);
       }, 1000);
     } else {
       if (this.openedTiles === this.size * (this.size - 1)) {
         this.handler(true, this.steps, this.timeCounter.textContent);
         this.stopTimer();
+        this.saveVictory();
+        localStorage.setItem("game", undefined);
       } else {
         if (neigbourMines === 0) {
           if (y > 0) {
@@ -142,6 +183,11 @@ export default class Field {
       }
     }
     if (wasClicked) {
+      if (this.steps === 0) {
+        alert(
+          "Приветствую! Для удобства проверки чит с  расположением мин выведен в консоль с:"
+        );
+      }
       this.steps = this.steps + 1;
       this.stepsCounter.textContent = `Steps: ${this.steps}`;
     }
@@ -159,10 +205,12 @@ export default class Field {
     this.stepsCounter.textContent = `Steps: ${this.steps}`;
     this.stopTimer();
     this.timeCounter.textContent = "00:00";
+    this.openedTileXYs = [];
+    localStorage.setItem("game", undefined);
   }
 
-  startTimer() {
-    this.time = 0;
+  startTimer(start) {
+    this.time = start;
     clearInterval(this.interval);
     this.interval = setInterval(this.countSeconds.bind(this), 1000);
   }
@@ -189,6 +237,47 @@ export default class Field {
       if (mins < 10) {
         this.timeCounter.textContent = `0${mins}:${secs}`;
       } else this.timeCounter.textContent = `${mins}:${secs}`;
+    }
+    this.saveState();
+  }
+
+  saveState() {
+    const gameState = JSON.stringify({
+      opened: this.openedTileXYs,
+      time: this.time,
+      steps: this.steps,
+      size: this.size,
+      array: this.array,
+      timeString: this.timeCounter.textContent,
+      flaged: this.flagedXYs,
+    });
+    localStorage.setItem("game", gameState);
+  }
+
+  saveVictory() {
+    if (!localStorage.getItem("results")) {
+      const array = JSON.stringify([
+        { name: "Name", time: "Time", steps: "Steps" },
+        {
+          name: "player1",
+          time: this.timeCounter.textContent,
+          steps: this.steps,
+        },
+      ]);
+      localStorage.setItem("results", array);
+    } else {
+      let array = JSON.parse(localStorage.getItem("results"));
+      const result = {
+        name: "player1",
+        time: this.timeCounter.textContent,
+        steps: this.steps,
+      };
+      array.splice(1, 0, result);
+      if (array.length > 11) {
+        array = array.slice(0, 11);
+      }
+      array = JSON.stringify(array);
+      localStorage.setItem("results", array);
     }
   }
 }
