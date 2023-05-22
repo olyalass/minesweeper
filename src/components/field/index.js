@@ -6,6 +6,7 @@ import stickSound from "../../../assets/sounds/stick.ogg";
 import canSound from "../../../assets/sounds/can.ogg";
 import chipsSound from "../../../assets/sounds/chips.ogg";
 import flagSound from "../../../assets/sounds/flag.ogg";
+import Table from "../table";
 
 export default class Field {
   constructor() {
@@ -69,7 +70,25 @@ export default class Field {
       this.flagedXYs = prevGame.flaged;
     }
 
-    this.item.append(panel, container);
+    const nav = document.createElement("div");
+    nav.classList.add("field__panel");
+    this.tableButton = document.createElement("button");
+    this.tableButton.classList.add("button");
+    this.tableButton.textContent = "See results";
+    const themeButton = document.createElement("button");
+    themeButton.classList.add("button");
+    themeButton.textContent = "Dark theme";
+    nav.append(themeButton, this.tableButton);
+
+    this.tableButton.addEventListener("click", () => {
+      const table = new Table();
+      this.resTable = table.item;
+      this.item.append(this.resTable);
+
+      this.resTable.addEventListener("click", () => this.resTable.remove());
+    });
+
+    this.item.append(panel, container, nav);
 
     this.createTiles();
 
