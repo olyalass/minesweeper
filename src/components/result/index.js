@@ -11,19 +11,20 @@ export default class Result {
     const img = document.createElement("img");
     img.classList.add("result__img");
     this.item.append(container);
-    container.append(title, img);
+    const text = document.createElement("h4");
+    text.classList.add("result__text");
+    container.append(title, img, text);
     if (isWinner) {
       title.textContent = "You won!";
       img.setAttribute(
         "src",
         require("../../../assets/images/conejo-bugs-bunny.gif")
       );
-      const text = document.createElement("h4");
-      text.classList.add("result__text");
-      text.textContent = `You found all the dangerous objects and caught the wabbit in ${time} seconds and ${steps} moves!`;
-      container.append(text);
+      text.textContent = `You found all the dangerous objects and caught the wabbit in ${time} and ${steps} moves!`;
     } else {
       title.textContent = "Game over";
+      text.textContent =
+        "You've been detected! Don't step on objects in future attempts";
       img.setAttribute(
         "src",
         require("../../../assets/images/looney-tunes-elmer.gif")

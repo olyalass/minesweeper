@@ -109,16 +109,21 @@ export default class Field {
       this.generateField(x, y);
       this.createTiles();
     }
+    if (this.steps === 0) {
+      this.startTimer();
+    }
 
     this.openedTiles += 1;
     this.tilesArr.find((e) => e.xy === `${x} ${y}`).tile.revealTile();
     if (this.array[x][y]) {
       setTimeout(() => {
         this.handler(false);
+        this.stopTimer();
       }, 1000);
     } else {
       if (this.openedTiles === this.size * (this.size - 1)) {
         this.handler(true, this.steps, this.timeCounter.textContent);
+        this.stopTimer();
       } else {
         if (neigbourMines === 0) {
           if (y > 0) {
@@ -147,9 +152,43 @@ export default class Field {
   }
 
   restart() {
+    this.openedTiles = 0;
     this.generateField(0, 0);
     this.createTiles();
     this.steps = 0;
     this.stepsCounter.textContent = `Steps: ${this.steps}`;
+    this.stopTimer();
+    this.timeCounter.textContent = "00:00";
+  }
+
+  startTimer() {
+    this.time = 0;
+    clearInterval(this.interval);
+    this.interval = setInterval(this.countSeconds.bind(this), 1000);
+  }
+
+  stopTimer() {
+    clearInterval(this.interval);
+  }
+
+  countSeconds() {
+    this.time += 1;
+    let secs, mins;
+    if (this.time < 60) {
+      mins = 0;
+      secs = this.time;
+    } else {
+      secs = this.time % 60;
+      mins = Math.floor(this.time / 60);
+    }
+    if (secs < 10) {
+      if (mins < 10) {
+        this.timeCounter.textContent = `0${mins}:0${secs}`;
+      } else this.timeCounter.textContent = `${mins}:0${secs}`;
+    } else {
+      if (mins < 10) {
+        this.timeCounter.textContent = `0${mins}:${secs}`;
+      } else this.timeCounter.textContent = `${mins}:${secs}`;
+    }
   }
 }
