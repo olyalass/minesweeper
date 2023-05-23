@@ -171,4 +171,8 @@ export default class Tile {
     }
     return num;
   }
+
+  changeTheme() {
+    this.item.classList.toggle("tile_dark");
+  }
 }

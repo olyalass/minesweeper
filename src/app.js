@@ -8,11 +8,12 @@ export default class App {
   constructor() {
     this.item = document.createElement("div");
     this.item.classList.add("app");
-    const header = new Header();
+    this.header = new Header();
     this.field = new Field();
     this.field.onGameEnd(this.handleGameEnd.bind(this));
-    const footer = new Footer();
-    this.item.append(header.item, this.field.item, footer.item);
+    this.footer = new Footer();
+    this.item.append(this.header.item, this.field.item, this.footer.item);
+    this.field.onThemeChange(this.handleThemeChange.bind(this));
   }
 
   handleGameEnd(isWinner, steps, time) {
@@ -24,5 +25,15 @@ export default class App {
   handleRestart() {
     this.field.restart();
     this.result.item.remove();
+  }
+
+  handleThemeChange() {
+    this.changeTheme();
+  }
+
+  changeTheme() {
+    this.item.classList.toggle("app_dark");
+    this.header.changeTheme();
+    this.footer.changeTheme();
   }
 }

@@ -9,17 +9,21 @@
   box-sizing: border-box;
   border: 3px solid rgb(1, 80, 1);
 
+  &_dark {
+    filter: brightness(70%);
+  }
+
   &__num {
     &_one {
-      color: rgb(1, 118, 1);
+      color: rgb(2, 171, 2);
     }
 
     &_two {
-      color: rgb(115, 132, 5);
+      color: rgb(150, 150, 3);
     }
 
     &_three {
-      color: rgb(170, 130, 0);
+      color: rgb(166, 98, 8);
     }
 
     &_four {

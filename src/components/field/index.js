@@ -15,8 +15,8 @@ export default class Field {
 
     const panel = document.createElement("div");
     panel.classList.add("field__panel");
-    const container = document.createElement("div");
-    container.classList.add("field__container");
+    this.container = document.createElement("div");
+    this.container.classList.add("field__container");
 
     this.stepsCounter = document.createElement("h3");
     this.stepsCounter.classList.add("field__counter");
@@ -36,7 +36,7 @@ export default class Field {
     const bunny = document.createElement("img");
     bunny.setAttribute("src", require("../../../assets/images/bunny.png"));
     bunny.classList.add("field__bunny");
-    container.append(hunter, this.board, bunny);
+    this.container.append(hunter, this.board, bunny);
 
     const soundsObj = {
       step: stepSound,
@@ -50,8 +50,12 @@ export default class Field {
     });
 
     this.tilesArr = [];
+    this.isDark = false;
 
-    if (localStorage.getItem("game") === "undefined") {
+    if (
+      !localStorage.getItem("game") ||
+      localStorage.getItem("game") === "undefined"
+    ) {
       this.size = 10;
       this.generateField(0, 0);
       this.openedTiles = 0;
@@ -75,20 +79,24 @@ export default class Field {
     this.tableButton = document.createElement("button");
     this.tableButton.classList.add("button");
     this.tableButton.textContent = "See results";
-    const themeButton = document.createElement("button");
-    themeButton.classList.add("button");
-    themeButton.textContent = "Dark theme";
-    nav.append(themeButton, this.tableButton);
+    this.themeButton = document.createElement("button");
+    this.themeButton.classList.add("button");
+    this.themeButton.textContent = "Set dark theme";
+    this.themeButton.addEventListener("click", () => this.changeTheme());
+    nav.append(this.themeButton, this.tableButton);
 
     this.tableButton.addEventListener("click", () => {
       const table = new Table();
       this.resTable = table.item;
       this.item.append(this.resTable);
+      if (this.isDark) {
+        table.changeTheme();
+      }
 
       this.resTable.addEventListener("click", () => this.resTable.remove());
     });
 
-    this.item.append(panel, container, nav);
+    this.item.append(panel, this.container, nav);
 
     this.createTiles();
 
@@ -104,6 +112,25 @@ export default class Field {
       const target = this.tilesArr.find((e) => e.xy === coords).tile;
       target.flag();
     });
+  }
+
+  changeTheme() {
+    this.themeHandler();
+    this.board.classList.toggle("field__board_dark");
+    this.tilesArr.forEach((e) => {
+      e.tile.changeTheme();
+    });
+    if (this.isDark) {
+      this.isDark = false;
+      this.themeButton.textContent = "Set dark theme";
+    } else {
+      this.isDark = true;
+      this.themeButton.textContent = "Set light theme";
+    }
+  }
+
+  onThemeChange(handler) {
+    this.themeHandler = handler;
   }
 
   createAudio(sound, id) {
@@ -123,6 +150,9 @@ export default class Field {
           tile = new Tile(true, this.array, i, j);
         } else {
           tile = new Tile(false, this.array, i, j);
+        }
+        if (this.isDark) {
+          tile.changeTheme();
         }
         tile.onStepDone(this.handleStep.bind(this));
         tile.onFlag(this.handleFlag.bind(this));

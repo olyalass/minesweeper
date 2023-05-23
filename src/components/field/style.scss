@@ -35,6 +35,10 @@
     border-radius: 1vw;
     box-sizing: border-box;
     padding: 2vw;
+
+    &_dark {
+      background-color: rgb(82, 44, 20);
+    }
   }
 
   &__hunter {
