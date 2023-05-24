@@ -23,8 +23,11 @@ body {
   border: none;
   cursor: pointer;
   min-width: 4vw;
+  border-radius: 1vw;
+  border: 2px solid black;
+  padding: 0.5vw;
 
   &:hover {
-    font-size: 1.6vw;
+    background-color: rgba(0, 0, 0, 0.5);
   }
 }

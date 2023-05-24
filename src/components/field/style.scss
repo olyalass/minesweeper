@@ -7,10 +7,11 @@
   gap: 20px;
 
   &__panel {
-    width: 20vw;
+    min-width: 20vw;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
   }
 
   &__counter {

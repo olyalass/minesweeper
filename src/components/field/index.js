@@ -52,38 +52,33 @@ export default class Field {
     this.tilesArr = [];
     this.isDark = false;
 
-    if (
-      !localStorage.getItem("game") ||
-      localStorage.getItem("game") === "undefined"
-    ) {
-      this.size = 10;
-      this.generateField(0, 0);
-      this.openedTiles = 0;
-      this.openedTileXYs = [];
-      this.flagedXYs = [];
-    } else {
-      const prevGame = JSON.parse(localStorage.getItem("game"));
-      this.array = prevGame.array;
-      this.time = prevGame.time;
-      this.startTimer(this.time);
-      this.timeCounter.textContent = prevGame.timeString;
-      this.steps = prevGame.steps;
-      this.stepsCounter.textContent = `Steps: ${this.steps}`;
-      this.size = prevGame.size;
-      this.openedTileXYs = prevGame.opened;
-      this.flagedXYs = prevGame.flaged;
-    }
+    this.size = 10;
+    this.generateField(0, 0);
+    this.openedTiles = 0;
+    this.openedTileXYs = [];
+    this.flagedXYs = [];
 
     const nav = document.createElement("div");
     nav.classList.add("field__panel");
     this.tableButton = document.createElement("button");
     this.tableButton.classList.add("button");
     this.tableButton.textContent = "See results";
+    this.saveButton = document.createElement("button");
+    this.saveButton.classList.add("button");
+    this.saveButton.textContent = "Save the game";
+    this.loadButton = document.createElement("button");
+    this.loadButton.classList.add("button");
+    this.loadButton.textContent = "Load the game";
     this.themeButton = document.createElement("button");
     this.themeButton.classList.add("button");
     this.themeButton.textContent = "Set dark theme";
     this.themeButton.addEventListener("click", () => this.changeTheme());
-    nav.append(this.themeButton, this.tableButton);
+    nav.append(
+      this.themeButton,
+      this.saveButton,
+      this.loadButton,
+      this.tableButton
+    );
 
     this.tableButton.addEventListener("click", () => {
       const table = new Table();
@@ -96,21 +91,16 @@ export default class Field {
       this.resTable.addEventListener("click", () => this.resTable.remove());
     });
 
+    this.saveButton.addEventListener("click", () => this.saveState());
+
+    this.loadButton.addEventListener("click", () => this.loadGame());
+
     this.item.append(panel, this.container, nav);
 
     this.createTiles();
 
     this.restartButton.addEventListener("click", () => {
       this.restart();
-    });
-
-    this.openedTileXYs.forEach((coords) => {
-      const target = this.tilesArr.find((e) => e.xy === coords).tile;
-      target.silentRevealTile();
-    });
-    this.flagedXYs.forEach((coords) => {
-      const target = this.tilesArr.find((e) => e.xy === coords).tile;
-      target.flag();
     });
   }
 
@@ -206,14 +196,12 @@ export default class Field {
       setTimeout(() => {
         this.handler(false);
         this.stopTimer();
-        localStorage.setItem("game", undefined);
       }, 1000);
     } else {
       if (this.openedTiles === this.size * (this.size - 1)) {
         this.handler(true, this.steps, this.timeCounter.textContent);
         this.stopTimer();
         this.saveVictory();
-        localStorage.setItem("game", undefined);
       } else {
         if (neigbourMines === 0) {
           if (y > 0) {
@@ -255,7 +243,6 @@ export default class Field {
     this.stopTimer();
     this.timeCounter.textContent = "00:00";
     this.openedTileXYs = [];
-    localStorage.setItem("game", undefined);
   }
 
   startTimer(start) {
@@ -287,7 +274,6 @@ export default class Field {
         this.timeCounter.textContent = `0${mins}:${secs}`;
       } else this.timeCounter.textContent = `${mins}:${secs}`;
     }
-    this.saveState();
   }
 
   saveState() {
@@ -301,6 +287,33 @@ export default class Field {
       flaged: this.flagedXYs,
     });
     localStorage.setItem("game", gameState);
+  }
+
+  loadGame() {
+    if (
+      localStorage.getItem("game") &&
+      localStorage.getItem("game") !== "undefined"
+    ) {
+      const prevGame = JSON.parse(localStorage.getItem("game"));
+      this.array = prevGame.array;
+      this.time = prevGame.time;
+      this.startTimer(this.time);
+      this.timeCounter.textContent = prevGame.timeString;
+      this.steps = prevGame.steps;
+      this.stepsCounter.textContent = `Steps: ${this.steps}`;
+      this.size = prevGame.size;
+      this.openedTileXYs = prevGame.opened;
+      this.flagedXYs = prevGame.flaged;
+      this.createTiles();
+      this.openedTileXYs.forEach((coords) => {
+        const target = this.tilesArr.find((e) => e.xy === coords).tile;
+        target.silentRevealTile();
+      });
+      this.flagedXYs.forEach((coords) => {
+        const target = this.tilesArr.find((e) => e.xy === coords).tile;
+        target.flag();
+      });
+    }
   }
 
   saveVictory() {
