@@ -26,7 +26,13 @@ export default class Field {
     this.timeCounter = document.createElement("h3");
     this.timeCounter.classList.add("field__counter");
     this.timeCounter.textContent = "00:00";
-    panel.append(this.stepsCounter, this.restartButton, this.timeCounter);
+    this.soundButton = createButton("Sound off");
+    panel.append(
+      this.stepsCounter,
+      this.restartButton,
+      this.soundButton,
+      this.timeCounter
+    );
 
     this.board = document.createElement("div");
     this.board.classList.add("field__board");
@@ -58,6 +64,7 @@ export default class Field {
     this.openedTiles = 0;
     this.openedTileXYs = [];
     this.flagedXYs = [];
+    this.sound = true;
 
     const nav = document.createElement("div");
     nav.classList.add("field__panel");
@@ -90,6 +97,16 @@ export default class Field {
       }
 
       this.resTable.addEventListener("click", () => this.resTable.remove());
+    });
+
+    this.soundButton.addEventListener("click", () => {
+      if (this.sound) {
+        this.sound = false;
+        this.soundButton.textContent = "Sound on";
+      } else {
+        this.sound = true;
+        this.soundButton.textContent = "Sound off";
+      }
     });
 
     this.saveButton.addEventListener("click", () => this.saveState());
@@ -179,10 +196,13 @@ export default class Field {
   }
 
   handleFlag(x, y, isFlagged) {
+    const flagObj = this.tilesArr.find((e) => e.xy === `${x} ${y}`);
     if (isFlagged) {
-      const flagObj = this.tilesArr.find((e) => e.xy === `${x} ${y}`);
       this.flagedXYs.push(flagObj.xy);
     } else this.flagedXYs = this.flagedXYs.filter((e) => e !== `${x} ${y}`);
+    if (this.sound) {
+      flagObj.tile.playSound();
+    }
   }
 
   handleStep(x, y, neigbourMines, wasClicked) {
@@ -229,6 +249,9 @@ export default class Field {
       }
     }
     if (wasClicked) {
+      if (this.sound) {
+        tileObj.tile.playSound();
+      }
       if (this.steps === 0) {
         alert(
           "Приветствую! Для удобства проверки чит с  расположением мин выведен в консоль с:"

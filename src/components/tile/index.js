@@ -33,12 +33,15 @@ export default class Tile {
     this.item.addEventListener("contextmenu", (i) => {
       if (!this.isOpened) {
         i.preventDefault();
-        this.flag();
 
-        let flag = document.getElementById("flag");
-        flag.play();
+        this.sound = document.getElementById("flag");
+        this.flag();
       }
     });
+  }
+
+  playSound() {
+    this.sound.play();
   }
 
   flag() {
@@ -79,22 +82,20 @@ export default class Tile {
   }
 
   revealTile() {
-    let audio;
     if (!this.isMine) {
       const num = this.showMineCount();
-      audio = document.getElementById("step");
+      this.sound = document.getElementById("step");
       this.item.classList.add("tile_opened");
       this.item.innerHTML = "";
       this.item.append(num);
     } else {
       this.item.classList.add("tile_mine");
-      audio = document.getElementById(this.soundId);
+      this.sound = document.getElementById(this.soundId);
       const img = document.createElement("img");
       img.classList.add("tile__img");
       img.setAttribute("src", this.img);
       this.item.appendChild(img);
     }
-    audio.play();
     this.isOpened = true;
   }
 
