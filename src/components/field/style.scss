@@ -20,6 +20,11 @@
     font-family: "Staatliches";
   }
 
+  &__button-wrap {
+    display: flex;
+    gap: 10px;
+  }
+
   &__container {
     display: grid;
     grid-template-columns: 10vw 1fr 10vw;
@@ -110,6 +115,10 @@
     &__panel {
       max-width: 258px;
       flex-wrap: wrap;
+
+      &_up {
+        justify-content: center;
+      }
     }
   }
 }

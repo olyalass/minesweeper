@@ -1,0 +1,46 @@
+.instruction {
+  position: fixed;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  &__container {
+    max-width: 90vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2vw;
+    background-color: rgb(167, 34, 14);
+    border-radius: 1vw;
+    border: 5px solid black;
+    padding: 2.5vw;
+
+    &_dark {
+      background-color: rgb(35, 16, 131);
+    }
+  }
+
+  &__img {
+    max-width: 100%;
+  }
+
+  &__title {
+    margin: 0;
+    color: rgb(254, 202, 49);
+    font-family: "Luckiest Guy";
+    text-shadow: 3px 3px black;
+  }
+
+  &__text {
+    color: rgb(251, 224, 170);
+    font-family: "Staatliches";
+    text-shadow: 3px 3px black;
+    line-height: 250%;
+  }
+}

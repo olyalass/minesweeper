@@ -9,6 +9,7 @@ import flagSound from "../../../assets/sounds/flag.ogg";
 import winSound from "../../../assets/sounds/relief.ogg";
 import loseSound from "../../../assets/sounds/ashamed.ogg";
 import Table from "../table";
+import Instruction from "../instruction";
 
 export default class Field {
   constructor() {
@@ -16,7 +17,7 @@ export default class Field {
     this.item.classList.add("field");
 
     const panel = document.createElement("div");
-    panel.classList.add("field__panel");
+    panel.classList.add("field__panel", "field__panel_up");
     this.container = document.createElement("div");
     this.container.classList.add("field__container");
 
@@ -29,12 +30,20 @@ export default class Field {
     this.timeCounter.classList.add("field__counter");
     this.timeCounter.textContent = "00:00";
     this.soundButton = createButton("Sound off");
-    panel.append(
-      this.stepsCounter,
-      this.restartButton,
-      this.soundButton,
-      this.timeCounter
-    );
+    this.infoButton = createButton("info");
+    this.infoButton.addEventListener("click", () => {
+      if (this.isDark) {
+        const instr = new Instruction(true);
+        this.item.append(instr.item);
+      } else {
+        const instr = new Instruction(false);
+        this.item.append(instr.item);
+      }
+    });
+    const buttonsWrap = document.createElement("div");
+    buttonsWrap.classList.add("field__button-wrap");
+    buttonsWrap.append(this.restartButton, this.infoButton, this.soundButton);
+    panel.append(this.stepsCounter, buttonsWrap, this.timeCounter);
 
     this.board = document.createElement("div");
     this.board.classList.add("field__board");
@@ -116,6 +125,14 @@ export default class Field {
     this.saveButton.addEventListener("click", () => this.saveState());
 
     this.loadButton.addEventListener("click", () => this.loadGame());
+
+    if (
+      !localStorage.getItem("game") ||
+      localStorage.getItem("game") === "undefined"
+    ) {
+      const instr = new Instruction();
+      this.item.append(instr.item);
+    }
 
     this.item.append(panel, this.container, nav);
 
@@ -255,6 +272,26 @@ export default class Field {
           if (x < this.size - 1) {
             this.tilesArr.find((e) => e.xy === `${x + 1} ${y}`).tile.openTile();
           }
+          if (x < this.size - 1 && y > 0) {
+            this.tilesArr
+              .find((e) => e.xy === `${x + 1} ${y - 1}`)
+              .tile.openTile();
+          }
+          if (y < this.size - 1 && x > 0) {
+            this.tilesArr
+              .find((e) => e.xy === `${x - 1} ${y + 1}`)
+              .tile.openTile();
+          }
+          if (y < this.size - 1 && x < this.size - 1) {
+            this.tilesArr
+              .find((e) => e.xy === `${x + 1} ${y + 1}`)
+              .tile.openTile();
+          }
+          if (y > 0 && x > 0) {
+            this.tilesArr
+              .find((e) => e.xy === `${x - 1} ${y - 1}`)
+              .tile.openTile();
+          }
         }
       }
     }
@@ -349,13 +386,14 @@ export default class Field {
       this.flagedXYs = prevGame.flaged;
       this.mines = prevGame.mines;
       this.createTiles();
+
+      this.flagedXYs.forEach((coords) => {
+        const target = this.tilesArr.find((e) => e.xy === coords).tile;
+        target.silentFlag();
+      });
       this.openedTileXYs.forEach((coords) => {
         const target = this.tilesArr.find((e) => e.xy === coords).tile;
         target.silentRevealTile();
-      });
-      this.flagedXYs.forEach((coords) => {
-        const target = this.tilesArr.find((e) => e.xy === coords).tile;
-        target.flag();
       });
     }
   }

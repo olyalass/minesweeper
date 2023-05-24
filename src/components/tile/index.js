@@ -56,6 +56,15 @@ export default class Tile {
       this.isFlagged = false;
     }
   }
+  silentFlag() {
+    if (!this.isFlagged) {
+      this.item.append(this.flagImg);
+      this.isFlagged = true;
+    } else {
+      this.flagImg.remove();
+      this.isFlagged = false;
+    }
+  }
 
   openTile() {
     if (!this.isFlagged && !this.isOpened) {
@@ -65,20 +74,22 @@ export default class Tile {
   }
 
   silentRevealTile() {
-    if (!this.isMine) {
-      this.countMines();
-      const num = this.showMineCount();
-      this.item.classList.add("tile_opened");
-      this.item.innerHTML = "";
-      this.item.append(num);
-    } else {
-      this.item.classList.add("tile_mine");
-      const img = document.createElement("img");
-      img.classList.add("tile__img");
-      img.setAttribute("src", this.img);
-      this.item.appendChild(img);
+    if (!this.isFlagged) {
+      if (!this.isMine) {
+        this.countMines();
+        const num = this.showMineCount();
+        this.item.classList.add("tile_opened");
+        this.item.innerHTML = "";
+        this.item.append(num);
+      } else {
+        this.item.classList.add("tile_mine");
+        const img = document.createElement("img");
+        img.classList.add("tile__img");
+        img.setAttribute("src", this.img);
+        this.item.appendChild(img);
+      }
+      this.isOpened = true;
     }
-    this.isOpened = true;
   }
 
   revealTile() {
