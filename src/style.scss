@@ -16,18 +16,36 @@ body {
 
 .button {
   color: rgb(254, 202, 49);
-  font-size: 1.3vw;
+  font-size: 24px;
   font-family: "Luckiest Guy";
   text-shadow: 3px 3px black;
+  height: fit-content;
   background-color: unset;
   border: none;
   cursor: pointer;
-  min-width: 4vw;
-  border-radius: 1vw;
+  min-width: 120px;
+  border-radius: 7px;
   border: 2px solid black;
-  padding: 0.5vw;
+  padding: 5px 10px;
+  box-sizing: border-box;
 
-  &:hover {
+  &:hover,
+  &_active {
     background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+@media (max-width: 1300px) {
+  .button {
+    font-size: 18px;
+    padding: 5px 7px;
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 750px) {
+  .button {
+    font-size: 14px;
+    min-width: 50px;
   }
 }

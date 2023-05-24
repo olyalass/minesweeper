@@ -53,7 +53,8 @@ export default class Field {
     this.isDark = false;
 
     this.size = 10;
-    this.generateField(0, 0);
+    this.mines = 10;
+    this.generateField(0, 0, this.size, this.mines);
     this.openedTiles = 0;
     this.openedTileXYs = [];
     this.flagedXYs = [];
@@ -100,7 +101,7 @@ export default class Field {
     this.createTiles();
 
     this.restartButton.addEventListener("click", () => {
-      this.restart();
+      this.restart(this.size, this.mines);
     });
   }
 
@@ -144,6 +145,12 @@ export default class Field {
         if (this.isDark) {
           tile.changeTheme();
         }
+        if (this.size === 15) {
+          tile.item.classList.add("tile_m");
+        }
+        if (this.size === 25) {
+          tile.item.classList.add("tile_s");
+        }
         tile.onStepDone(this.handleStep.bind(this));
         tile.onFlag(this.handleFlag.bind(this));
         this.board.append(tile.item);
@@ -153,9 +160,11 @@ export default class Field {
     }
   }
 
-  generateField(reservedX, reservedY) {
+  generateField(reservedX, reservedY, size, mines) {
+    this.size = size;
+    this.mines = mines;
     const array = Array.from(Array(this.size), () => new Array(this.size));
-    for (let i = 0; i < this.size; i++) {
+    for (let i = 0; i < this.mines; i++) {
       let x = Math.floor(Math.random() * this.size);
       let y = Math.floor(Math.random() * this.size);
       while ((x === reservedX && y === reservedY) || array[x][y]) {
@@ -180,7 +189,7 @@ export default class Field {
     this.x = x;
     this.y = y;
     while (this.array[x][y] && this.steps === 0) {
-      this.generateField(x, y);
+      this.generateField(x, y, this.size, this.mines);
       this.createTiles();
     }
 
@@ -198,7 +207,7 @@ export default class Field {
         this.stopTimer();
       }, 1000);
     } else {
-      if (this.openedTiles === this.size * (this.size - 1)) {
+      if (this.openedTiles === this.size * this.size - this.mines) {
         this.handler(true, this.steps, this.timeCounter.textContent);
         this.stopTimer();
         this.saveVictory();
@@ -234,9 +243,9 @@ export default class Field {
     this.handler = handler;
   }
 
-  restart() {
+  restart(size = this.size, mines = this.mines) {
     this.openedTiles = 0;
-    this.generateField(0, 0);
+    this.generateField(0, 0, size, mines);
     this.createTiles();
     this.steps = 0;
     this.stepsCounter.textContent = `Steps: ${this.steps}`;
@@ -285,6 +294,7 @@ export default class Field {
       array: this.array,
       timeString: this.timeCounter.textContent,
       flaged: this.flagedXYs,
+      mines: this.mines,
     });
     localStorage.setItem("game", gameState);
   }
@@ -304,6 +314,7 @@ export default class Field {
       this.size = prevGame.size;
       this.openedTileXYs = prevGame.opened;
       this.flagedXYs = prevGame.flaged;
+      this.mines = prevGame.mines;
       this.createTiles();
       this.openedTileXYs.forEach((coords) => {
         const target = this.tilesArr.find((e) => e.xy === coords).tile;
@@ -319,11 +330,19 @@ export default class Field {
   saveVictory() {
     if (!localStorage.getItem("results")) {
       const array = JSON.stringify([
-        { name: "Name", time: "Time", steps: "Steps" },
+        {
+          name: "Name",
+          time: "Time",
+          steps: "Steps",
+          size: "Size",
+          mines: "Mines",
+        },
         {
           name: "player1",
           time: this.timeCounter.textContent,
           steps: this.steps,
+          size: `${this.size}x${this.size}`,
+          mines: this.mines,
         },
       ]);
       localStorage.setItem("results", array);
@@ -333,6 +352,8 @@ export default class Field {
         name: "player1",
         time: this.timeCounter.textContent,
         steps: this.steps,
+        size: `${this.size}x${this.size}`,
+        mines: this.mines,
       };
       array.splice(1, 0, result);
       if (array.length > 11) {

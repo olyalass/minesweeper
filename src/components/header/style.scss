@@ -29,3 +29,17 @@
     text-shadow: 3px 3px black;
   }
 }
+
+@media (max-width: 1300px) {
+  .header {
+    padding: 10px;
+
+    &__title {
+      font-size: 22px;
+    }
+
+    &__subtitle {
+      font-size: 18px;
+    }
+  }
+}

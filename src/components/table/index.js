@@ -37,7 +37,13 @@ export default class Table {
         const steps = document.createElement("span");
         steps.classList.add("table__span");
         steps.textContent = e.steps;
-        li.append(name, time, steps);
+        const size = document.createElement("span");
+        size.classList.add("table__span");
+        size.textContent = e.size;
+        const mines = document.createElement("span");
+        mines.classList.add("table__span");
+        mines.textContent = e.mines;
+        li.append(name, time, steps, size, mines);
         list.append(li);
       });
     }

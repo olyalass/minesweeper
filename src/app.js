@@ -14,6 +14,7 @@ export default class App {
     this.footer = new Footer();
     this.item.append(this.header.item, this.field.item, this.footer.item);
     this.field.onThemeChange(this.handleThemeChange.bind(this));
+    this.footer.onNewField(this.handleNewParams.bind(this));
   }
 
   handleGameEnd(isWinner, steps, time) {
@@ -25,6 +26,10 @@ export default class App {
   handleRestart() {
     this.field.restart();
     this.result.item.remove();
+  }
+
+  handleNewParams(size, mines) {
+    this.field.restart(size, mines);
   }
 
   handleThemeChange() {
