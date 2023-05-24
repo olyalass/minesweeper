@@ -6,6 +6,8 @@ import stickSound from "../../../assets/sounds/stick.ogg";
 import canSound from "../../../assets/sounds/can.ogg";
 import chipsSound from "../../../assets/sounds/chips.ogg";
 import flagSound from "../../../assets/sounds/flag.ogg";
+import winSound from "../../../assets/sounds/relief.ogg";
+import loseSound from "../../../assets/sounds/ashamed.ogg";
 import Table from "../table";
 
 export default class Field {
@@ -50,6 +52,8 @@ export default class Field {
       can: canSound,
       chips: chipsSound,
       flag: flagSound,
+      win: winSound,
+      lose: loseSound,
     };
     Object.keys(soundsObj).forEach((key) => {
       this.createAudio(soundsObj[key], key);
@@ -225,12 +229,18 @@ export default class Field {
       setTimeout(() => {
         this.handler(false);
         this.stopTimer();
+        if (this.sound) {
+          setTimeout(this.playSound(false), 3000);
+        }
       }, 1000);
     } else {
       if (this.openedTiles === this.size * this.size - this.mines) {
         this.handler(true, this.steps, this.timeCounter.textContent);
         this.stopTimer();
         this.saveVictory();
+        if (this.sound) {
+          setTimeout(this.playSound(true), 1000);
+        }
       } else {
         if (neigbourMines === 0) {
           if (y > 0) {
@@ -384,6 +394,16 @@ export default class Field {
       }
       array = JSON.stringify(array);
       localStorage.setItem("results", array);
+    }
+  }
+
+  playSound(hasWon) {
+    if (hasWon) {
+      const sound = document.getElementById("win");
+      sound.play();
+    } else {
+      const sound = document.getElementById("lose");
+      sound.play();
     }
   }
 }
