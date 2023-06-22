@@ -4,16 +4,16 @@ export default class Result {
   constructor(isWinner, time, steps) {
     this.item = document.createElement("div");
     this.item.classList.add("result");
-    const container = document.createElement("div");
-    container.classList.add("result__container");
+    this.container = document.createElement("div");
+    this.container.classList.add("result__container");
     const title = document.createElement("h2");
     title.classList.add("result__title");
     const img = document.createElement("img");
     img.classList.add("result__img");
-    this.item.append(container);
+    this.item.append(this.container);
     const text = document.createElement("h4");
     text.classList.add("result__text");
-    container.append(title, img, text);
+    this.container.append(title, img, text);
     if (isWinner) {
       title.textContent = "You won!";
       img.setAttribute(
@@ -33,12 +33,16 @@ export default class Result {
     this.button = document.createElement("button");
     this.button.classList.add("button");
     this.button.textContent = "Try again";
-    container.append(this.button);
+    this.container.append(this.button);
 
     this.button.addEventListener("click", () => this.handler());
   }
 
   onRestart(handler) {
     this.handler = handler;
+  }
+
+  changeTheme() {
+    this.container.classList.toggle("result__container_dark");
   }
 }

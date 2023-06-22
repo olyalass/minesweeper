@@ -1,7 +1,7 @@
 import "./style.scss";
 
 export default class Instruction {
-  constructor() {
+  constructor(isDark = false) {
     this.item = document.createElement("div");
     this.item.classList.add("instruction");
     const container = document.createElement("div");
@@ -23,5 +23,8 @@ export default class Instruction {
     container.append(title, text, img);
 
     this.item.addEventListener("click", () => this.item.remove());
+    if (isDark) {
+      container.classList.add("instruction__container_dark");
+    }
   }
 }
