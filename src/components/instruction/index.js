@@ -12,7 +12,7 @@ export default class Instruction {
     const text = document.createElement("p");
     text.classList.add("instruction__text");
     text.innerHTML =
-      "1. Elmer needs to catch the bunny, but he needs to keep silence. <br> 2.You need to clean all the safe tiles on the field to help Elmer. <br> 3. If you step on the tile with an object, it makes a load sound and bunny notices you. Then you lose. <br> 4. When you open an empty tile which is near to the object, if shows a number of neigbour objects <br> 5. You win, if you open all the empty tiles.";
+      "1. Elmer needs to catch the bunny, but he needs to keep silence. <br> 2.You need to clean all the safe tiles on the field to help Elmer. <br> 3. If you step on the tile with an object, it makes a loud sound and bunny notices you. Then you lose. <br> 4. When you open an empty tile which is near to the object, it shows a number of neigbour objects <br> 5. You win, if you open all the empty tiles.";
     const img = document.createElement("img");
     img.classList.add("instruction__img");
     img.setAttribute(
